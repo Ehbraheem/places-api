@@ -1,5 +1,6 @@
 require "spec_helper"
 require "rack/test"
+require "byebug"
 require_relative "../app"
 
 RSpec.describe 'Places API' do
@@ -10,9 +11,21 @@ RSpec.describe 'Places API' do
 		PlacesApi
 	end
 
-	it 'says hi' do
-		get '/'
+	before(:each) { get '/'}
 
+	def parsed_body
+		JSON.parse last_response.body
+	end
+
+	it "has http status OK" do
 		expect(last_response).to be_ok
+	end
+
+	it "returns correct documents" do
+		payload = parsed_body
+
+		expect(payload).to have_key "welcome"
+		expect(payload["welcome"]).to_not be_nil
+		expect(payload["welcome"]).to eq "This is a test JSON response"
 	end
 end

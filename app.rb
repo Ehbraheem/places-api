@@ -1,7 +1,7 @@
 require 'sinatra/base'
 require "sinatra/activerecord"
 require "mongoid"
-require "byebug"
+# require "byebug"
 
 
 
@@ -12,7 +12,7 @@ class PlacesApi < Sinatra::Base
 	require "./config/environment" # db configurations
 
 	 get '/' do
-	 	"Hello World!"
+	 	{:welcome => "This is a test JSON response"}.to_json
 	 end
 
 end
