@@ -1,3 +1,7 @@
+# Bootstrap MongoDB connection
+Mongoid.load! './mongoid.yml'
+
+
 configure :production, :development, :test do 
 	db = URI.parse(ENV['DATABASE_URL'] || 'postgres://localhost/places_api')
 
