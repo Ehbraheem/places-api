@@ -1,8 +1,10 @@
-# Bootstrap MongoDB connection
-Mongoid.load! './mongoid.yml'
+
+Sinatra::Base.configure :production, :development, :test do 
+
+	# Bootstrap MongoDB connection
+	Mongoid.load! "./config/mongoid.yml"  # we are running this method from top-level
 
 
-configure :production, :development, :test do 
 	db = URI.parse(ENV['DATABASE_URL'] || 'postgres://localhost/places_api')
 
 	ActiveRecord::Base.establish_connection(
