@@ -3,6 +3,7 @@ class Point
 	attr_reader :lng, :lat
 
 	def initialize(arr)
+		return  if arr.nil?
 		@lat, @lng = arr
 	end
 
