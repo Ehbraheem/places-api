@@ -1,4 +1,8 @@
+require_relative File.join ".", "mongoid_helper"
+
 class Point
+
+	extend MongoidHelper
 
 	attr_reader :lng, :lat
 
@@ -16,27 +20,11 @@ class Point
 	end
 
 	def self.mongoize object
-		case object
-		when Point then object.mongoize
-		when Hash then
-			if object[:type] # GeoJSON format
-				Point.new(object[:coordinates]).mongoize
-			else
-				Point.new(object.values).mongoize
-			end
-		else object
-		end
+		self.mongoizer object, :coordinates
 	end
 
 	def self.demongoize object
-		Point.new(object[:coordinates])
-	end
-
-	def self.evolve object
-		case object 
-		when Point then object.mongoize
-		else object
-		end
+		self.demongoizer object, :coordinates
 	end
 
 end

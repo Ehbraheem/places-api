@@ -1,4 +1,8 @@
+require_relative File.join ".", "mongoid_helper"
+
 class Availability
+
+	extend MongoidHelper
 
 	attr_reader :open_now, :weekdays_text
 
@@ -12,27 +16,11 @@ class Availability
 	end
 
 	def self.mongoize object
-		case object
-		when Availability then object.mongoize
-		when Hash then
-			if object[:type]
-				Availability.new(object[:opening_hours]).mongoize
-			else 
-				Availability.new(object).mongoize
-			end
-
-		else object
-		end		
+		self.mongoizer object, :opening_hours
 	end
 
 	def self.demongoize object
-		Availability.new(object[:opening_hours])
+		self.demongoizer object, :opening_hours
 	end
 
-	def self.evolve object
-		case object 
-		when Availability then object.mongoize
-		else object
-		end
-	end
 end
