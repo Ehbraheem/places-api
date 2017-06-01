@@ -1,6 +1,5 @@
 require "spec_helper"
 require "rack/test"
-require "byebug"
 require_relative "../app"
 
 RSpec.describe 'Places API' do
