@@ -16,15 +16,27 @@
 # users commonly want.
 #
 
+ENV["RACK_ENV"] = 'test'
+
 
 require "byebug"
+require 'mongoid-rspec'
 
 require_relative File.expand_path "../support/models_helper", __FILE__
+require_relative File.expand_path "../../app", __FILE__
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
 
+  # bootstrap mongoid matchers for model specs
+  # :orm => :mongoid | load mongoid matcher with spec that have metadata orm set to mongoid
+  config.include Mongoid::Matchers, :type => :model, :orm => :mongoid
+
+  config.include ModelsHelper , :type => :model, :orm => :mongoid
+
+  # bootstrap models helper module for model type
   config.include ModelsHelper, type: :models
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

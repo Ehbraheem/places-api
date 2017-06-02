@@ -1,6 +1,40 @@
 module ModelsHelper
 
 
+	def put_new_value hash, newObject
+		# byebug
+		newObject.update_attributes(hash)
+		newObject
+	end
+
+	def create_random_place
+		Place.new({id: rand(1..30000), 
+										formatted_address: "23, Foo street",
+										location: ["Lagos"],
+										types: ["Foo"],
+										name: "Foo #{rand(1..3000)}",
+										rating: 7.8,
+										icon: "foo.png",
+										place_id: "234 #{rand(1..3000)}",
+										references: "good",
+										geometry: Point.new([rand(1..3000),rand(1..3000)]).mongoize,
+										opening_hours: Availability.new({open_now: true, weekdays_text: []}).mongoize,
+										})
+	end
+
+	def duplicate_fields object, field
+
+		expect(object.save).to be false
+
+		error_object = object.errors
+		expect(error_object).to respond_to :messages
+		expect(error_object.messages).to have_key field
+		expect(error_object.messages[field]).to_not be_empty
+		expect(error_object.messages[field]).to include /already taken/
+
+	end
+
+
 	RSpec.shared_examples "Custom DB type" do |object|
 
 		describe "valid #{object.to_s.classify}" do
@@ -71,6 +105,58 @@ module ModelsHelper
 
 		end
 
+	end
+
+	RSpec.shared_examples "duplicate field" do |field|
+
+		it "prevent save for non-unique #{field} field" do
+
+			persistable = create_random_place
+
+			persistable.save
+
+			# Sanity check
+			expect(persistable.persisted?).to be true
+			expect(persistable.errors.messages).to be_empty
+
+			# byebug
+
+			another_place = put_new_value({field => persistable[field]},
+			 								create_random_place)
+
+			duplicate_fields another_place, field
+
+		end
+
+	end
+
+	RSpec.shared_examples "duplicate of unique fields" do |fields|
+		
+		it "prevent save of all non-unique fields" do
+			
+			persistable = create_random_place
+
+			persistable.save
+
+			# Sanity check
+			expect(persistable.persisted?).to be true
+			expect(persistable.errors.messages).to be_empty
+
+			# byebug
+			another_place = put_new_value(fields.inject({})  do |hash, var|   
+															hash[var] = persistable[var]
+															hash 
+														end,
+			 								create_random_place)
+
+			fields.each do |f|
+				duplicate_fields another_place, f
+			end
+
+			error_object = another_place.errors
+			expect(error_object.full_messages.length).to be > 2
+
+		end
 	end
 
 	

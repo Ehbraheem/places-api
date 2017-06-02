@@ -15,6 +15,7 @@ module MongoidHelper
 	end
 
 	def demongoizer object, key
+		return if object.nil?
 		self.new(object[key])
 	end
 
