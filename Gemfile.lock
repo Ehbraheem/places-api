@@ -17,6 +17,7 @@ GEM
     bson (4.2.1)
     builder (3.2.3)
     byebug (9.0.6)
+    database_cleaner (1.5.3)
     diff-lcs (1.3)
     i18n (0.8.4)
     minitest (5.10.2)
@@ -70,9 +71,10 @@ PLATFORMS
   x64-mingw32
 
 DEPENDENCIES
-  activerecord (~> 4.0, >= 4.0)
+  activerecord (~> 4.2, >= 4.2.8)
   byebug
-  mongoid (~> 5.1, >= 5.1.5)
+  database_cleaner (~> 1.5, >= 1.5.3)
+  mongoid (~> 5.2, >= 5.2.1)
   mongoid-rspec (~> 3.0, >= 3.0.0)
   pg (~> 0.19, >= 0.19.0)
   rack-test (~> 0.6, >= 0.6.3)

@@ -12,4 +12,5 @@ group :test, :development do
 	gem 'rack-test', '~>0.6', '>=0.6.3'
 	gem 'mongoid-rspec', '~> 3.0', '>= 3.0.0'
 	gem 'byebug'
+	gem 'database_cleaner', '~>1.5', '>=1.5.3'
 end
