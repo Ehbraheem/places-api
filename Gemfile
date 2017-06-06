@@ -13,5 +13,6 @@ group :test, :development do
 	gem 'mongoid-rspec', '~> 3.0', '>= 3.0.0'
 	gem 'byebug'
 	gem 'database_cleaner', '~>1.5', '>=1.5.3'
-	gem 'factory_girl'
+	gem 'factory_girl', '~>4.8', '>=4.8.0'
+	gem 'faker', '~>1.7', '>=1.7.3'
 end
