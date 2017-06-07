@@ -2,7 +2,6 @@ class CreateLocation < ActiveRecord::Migration[5.1]
   def up
   	create_table :location do |t|
   		t.string :name, null: false
-  		t.references :category, index: true, foreign_key: true, null: false
 
   		t.timestamps null: false
   	end
