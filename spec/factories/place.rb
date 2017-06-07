@@ -18,6 +18,7 @@ FactoryGirl.define do
 													:weekdays_text => create_array(Faker::Time, 3, :backward) }) }
 		place_id              { Faker::Crypto.sha1 }
 		reference             { Faker::Crypto.sha256 }
+		rating                { Faker::Number.normal 0, 5 }
 
 	end
 
