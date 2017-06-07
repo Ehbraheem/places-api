@@ -1,12 +1,16 @@
 class CreateLocation < ActiveRecord::Migration[5.1]
-  def change
+  def up
   	create_table :location do |t|
   		t.string :name, null: false
   		t.references :category, index: true, foreign_key: true, null: false
-  		
+
   		t.timestamps null: false
   	end
 
   	add_index :location, :name
+  end
+
+  def down
+  	drop_table :location
   end
 end
