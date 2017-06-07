@@ -3,7 +3,7 @@ require "faker"
 
 FactoryGirl.define do
 	
-	factory :loc, class: 'Location' do
+	factory :location, class: 'Location' do
 		name     { Faker::Address.city }
 
 		trait :with_category do
