@@ -1,5 +1,5 @@
 require "mongoid"
-require_relative File.absolute_path "./models/availability.rb"
+# require_relative File.absolute_path "./models/availability.rb"
 require_relative File.absolute_path "./models/point.rb"
 
 class Place
@@ -15,13 +15,13 @@ class Place
 	field :name, type: String
 	field :opening_hours, type: Availability
 	field :place_id, type: String
-	field :references, type: String
+	field :reference, type: String
 	field :types, type: Array, default: []
 	field :rating, type: Float, default: 0.0
 	field :location, type: Array, default: []
 
 
-	validates_presence_of :location, :icon, :opening_hours, :references, :formatted_address, :name, :place_id, :geometry
+	validates_presence_of :location, :icon, :opening_hours, :reference, :formatted_address, :name, :place_id, :geometry
 	validates_uniqueness_of :name, :place_id, :geometry
 	
 

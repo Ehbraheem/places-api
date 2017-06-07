@@ -1,5 +1,5 @@
 require "spec_helper"
-require_relative File.absolute_path "./models/availability.rb"
+# require_relative File.absolute_path "./models/availability.rb"
 
 RSpec.describe "Availability", :type => :model do
 	

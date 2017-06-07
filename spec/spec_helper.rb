@@ -21,9 +21,14 @@ ENV["RACK_ENV"] = 'test'
 
 require "byebug"
 require 'mongoid-rspec'
+require 'factory_girl'
 
-require_relative File.expand_path "../support/models_helper", __FILE__
 require_relative File.expand_path "../../app", __FILE__
+require_relative File.expand_path "../support/models_helper", __FILE__
+require_relative File.expand_path "../support/database_cleaner", __FILE__
+
+#Eager Load all factories
+Dir[File.dirname(__FILE__) + "/factories/*.rb"].each { |file| require_relative file }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

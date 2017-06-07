@@ -22,6 +22,17 @@ module ModelsHelper
 										})
 	end
 
+	def send_message obj, msg, param=nil
+		param ? obj.send(msg.to_sym).send(param) : obj.send(msg.to_sym)
+	end
+
+	def make_hash_from_array arr, obj=nil
+		arr.inject({}) do |hash, elem|
+			hash[elem] = obj.has_key? elem.to_sym ? obj[elem.to_sym] : obj
+			hash
+		end
+	end
+
 	def duplicate_fields object, field
 
 		expect(object.save).to be false
@@ -86,7 +97,7 @@ module ModelsHelper
 
 	RSpec.shared_examples "Valid type" do |object, methods|
 
-		describe "valid Point instance" do
+		describe "valid #{object.to_s.classify} instance" do
 			# byebug
 
 			object = Object.const_get(object.to_s.classify).new(nil)
@@ -143,10 +154,7 @@ module ModelsHelper
 			expect(persistable.errors.messages).to be_empty
 
 			# byebug
-			another_place = put_new_value(fields.inject({})  do |hash, var|   
-															hash[var] = persistable[var]
-															hash 
-														end,
+			another_place = put_new_value(make_hash_from_array(fields, persistable),
 			 								create_random_place)
 
 			fields.each do |f|
@@ -159,5 +167,119 @@ module ModelsHelper
 		end
 	end
 
-	
+	RSpec.shared_examples "build valid object" do |object, fields|
+		
+		context "build valid #{object.to_s.classify}" do
+
+			let(:obj) { FactoryGirl.build(:object) }
+			
+			it "default Location created with random name" do
+				expect(obj).to_not be_nil
+				expect(obj).to be_a_kind_of object.to_s.classify
+
+				fields.each do |field|
+					expect(obj).to have_field field.to_sym
+					expect(obj).to respond_to field
+					expect(obj).to respond_to "#{field}=".to_sym
+				end
+				
+			end
+
+			it "create #{object.to_s.classify} with non-nil #{fields.join(',')}" do
+				fields.each do |field|
+					subject { send_message obj, field }
+					is_expected.to_not be_nil
+					is_expected.to_not be_empty
+					expect(subject.length).to be > 1
+					is_expected.to include /[a-z]/i
+				end
+				
+			end
+
+		end
+	end
+
+
+	RSpec.shared_examples "build invalid object" do |object, fields|
+		
+		context "build invalid #{object.to_s.classify}" do
+
+			let(:obj) { FactoryGirl.build(:object, make_hash_from_array(fields)) }
+			
+			it "fails to validate" do
+				fields.each do |field|
+					subject { send_message obj, field }
+
+					is_expected.to be_nil
+				end
+				expect(obj).to_not be_valid
+			end
+
+			it "fails to save" do
+				expect(obj.save).to be false
+				expect(obj).to have_field :errors
+				expect(obj).to_not be_valid
+			end
+
+			it "provides error message" do
+				expect(obj).to respond_to :errors
+				expect(obj.errors).to_not be_nil
+				expect(obj.errors).to respond_to :messages
+				fields.each do |field|
+					expect(obj.errors.messages).to include(field.to_sym =>["can't be blank"])
+				end
+			end
+		end
+	end
+
+	RSpec.shared_examples "Associations" do |object, association|
+
+		let(:obj) { FactoryGirl.create(object, "with_#{association}".to_sym) }
+
+		subject { send_message(obj, association.pluralize) }
+		
+		context "can walk through association" do
+			
+			it "can access categories information" do
+				expect(obj).to respond_to association.pluralize.to_sym
+				is_expected.to_not be_nil
+				expect(obj).to have_field association.pluralize.to_sym
+			end
+
+			it "can have more than one #{association}" do
+				expect(subject.count).to be >= 1
+				expect(subject.to_a).to be >= 1
+			end
+
+		end
+
+		context "can build association" do
+
+			let(:associated_obj) { FactoryGirl.attributes_for(association.to_sym) }
+			
+			it "can build new category" do
+				expect(subject.build(associated_obj)).to be true
+			end
+
+			it "can persist category" do
+				expect(subject.build(associated_obj).save).to be true
+			end
+
+		end
+
+		context "has foreign key field" do
+			
+			it "can walk back association" do
+				subject.each do |subj|
+					id = send_message(subj, "#{object}_id")
+					expect(id).to_not raise_error
+					expect(id).to_not be_nil
+					expect(id).to eq obj.id
+				end
+			end
+			
+		end
+
+	end
+
 end

@@ -1,5 +1,5 @@
 require "spec_helper"
-require_relative File.absolute_path "./models/point.rb"
+# require_relative File.absolute_path "./models/point.rb"
 
 
 RSpec.describe "Points", :type => :model do

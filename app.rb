@@ -3,6 +3,10 @@ require "sinatra/activerecord"
 require "mongoid"
 # require "byebug"
 
+# Eager Load all models files
+current_dir = Dir.pwd
+Dir["#{current_dir}/models/*.rb"].each {|file| require_relative file }
+
 
 
 

@@ -1,8 +1,10 @@
 require "spec_helper"
-require_relative File.absolute_path "./models/place.rb"
+# require_relative File.absolute_path "./models/place.rb"
 require_relative File.absolute_path "./models/point.rb"
 
 RSpec.describe Place, :type => :model, :orm => :mongoid do
+
+	include_context "db_cleanup_each"
 
 	let(:point) { Point.new(nil).mongoize }
 	let(:place) { Place.new }
@@ -19,7 +21,7 @@ RSpec.describe Place, :type => :model, :orm => :mongoid do
 
 			it { is_expected.to have_field(:place_id).of_type(String).with_default_value_of(nil) }
 
-			it { is_expected.to have_field(:references).of_type(String).with_default_value_of(nil) }
+			it { is_expected.to have_field(:reference).of_type(String).with_default_value_of(nil) }
 
 			it { is_expected.to have_field(:types).of_type(Array).with_default_value_of([]) }
 
