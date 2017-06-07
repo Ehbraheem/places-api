@@ -7,7 +7,13 @@ FactoryGirl.define do
 		name     { Faker::Address.city }
 
 		trait :with_category do
-			categories { 2.times { Faker::Job.field } }
+			transient do
+				category_count 4
+			end
+
+			after(:build) do |location, props|
+				location.categories << build_list(:category, props.category_count)
+			end
 		end
 	end
 
