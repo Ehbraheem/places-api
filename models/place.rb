@@ -5,6 +5,9 @@ require_relative File.absolute_path "./models/point.rb"
 class Place
 
 	include Mongoid::Document
+	include Mongoid::ActiveRecordBridge
+
+	belongs_to_record :category
 
 
 	field :_id,  type: String, default: -> { id }
