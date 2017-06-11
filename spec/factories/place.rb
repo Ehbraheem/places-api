@@ -15,10 +15,12 @@ FactoryGirl.define do
 								  					 "southwest" => create_point }} }
 		location              { create_array Faker::Address, 3, :city  }
 		opening_hours         { Availability.new({:open_now => Faker::Boolean.boolean, 
-													:weekdays_text => create_array(Faker::Time, 3, :backward) }) }
+													:weekdays_text => create_array(Faker::Time, 3, :backward) }).mongoize }
 		place_id              { Faker::Crypto.sha1 }
 		reference             { Faker::Crypto.sha256 }
 		rating                { Faker::Number.normal 0, 5 }
+
+		association :category
 
 	end
 
@@ -30,5 +32,5 @@ def create_array faker, amount, msg
 end
 
 def create_point
-	Point.new([Faker::Address.latitude, Faker::Address.longitude])
+	Point.new([Faker::Address.latitude, Faker::Address.longitude]).mongoize
 end
