@@ -10,16 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170606222713) do
+ActiveRecord::Schema.define(version: 20170607051746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "location", force: :cascade do |t|
+  create_table "categories", force: :cascade do |t|
+    t.string "title", null: false
+    t.bigint "location_id", null: false
+    t.index ["location_id"], name: "index_categories_on_location_id"
+    t.index ["title"], name: "index_categories_on_title"
+  end
+
+  create_table "locations", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_location_on_name"
+    t.index ["name"], name: "index_locations_on_name"
   end
 
+  add_foreign_key "categories", "locations"
 end

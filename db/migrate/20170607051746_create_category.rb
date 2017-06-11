@@ -1,12 +1,12 @@
 class CreateCategory < ActiveRecord::Migration[5.1]
   def up
-  	create_table :category do |t|
+  	create_table :categories do |t|
   		t.string :title, null: false
 
   		t.references :location, index: true, foreign_key: true, null: false
   	end
 
-  	add_index :category, :title
+  	add_index :categories, :title
   end
 
   def down
