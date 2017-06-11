@@ -74,7 +74,7 @@ RSpec.describe Place, :type => :model, :orm => :mongoid do
 				expect(place.types).to be_empty
 				expect(place.name).to be_nil
 				expect(place.icon).to be_nil
-				expect(place.references).to be_nil
+				expect(place.reference).to be_nil
 				expect(place.place_id).to be_nil
 				expect(place.geometry).to eq point
 				expect(place.location).to be_empty
@@ -102,7 +102,7 @@ RSpec.describe Place, :type => :model, :orm => :mongoid do
 				expect(place.errors.messages[:name]).to_not be_empty
 				expect(place.errors.messages[:location]).to_not be_empty
 				expect(place.errors.messages[:icon]).to_not be_empty
-				expect(place.errors.messages[:references]).to_not be_empty
+				expect(place.errors.messages[:reference]).to_not be_empty
 				expect(place.errors.messages[:formatted_address]).to_not be_empty
 				expect(place.errors.messages[:opening_hours]).to_not be_empty
 			end
