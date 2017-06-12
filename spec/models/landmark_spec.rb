@@ -59,7 +59,7 @@ RSpec.describe Landmark, type: :model, orm: :active_record do
 		context "belongs to Location" do
 
 			let(:fail_record) { FactoryGirl.build(:landmark) }
-			let(:record) { FactoryGirl.build(:landmark, :with_association)}
+			let(:record) { FactoryGirl.build(:landmark)}
 			
 			it "save fails when location is nil" do
 
