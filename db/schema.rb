@@ -10,15 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170612002714) do
+ActiveRecord::Schema.define(version: 20170612145558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "categories", force: :cascade do |t|
     t.string "title", null: false
-    t.bigint "location_id", null: false
-    t.index ["location_id"], name: "index_categories_on_location_id"
     t.index ["title"], name: "index_categories_on_title"
   end
 
@@ -36,7 +34,6 @@ ActiveRecord::Schema.define(version: 20170612002714) do
     t.index ["name"], name: "index_locations_on_name"
   end
 
-  add_foreign_key "categories", "locations"
   add_foreign_key "landmarks", "categories"
   add_foreign_key "landmarks", "locations"
 end
