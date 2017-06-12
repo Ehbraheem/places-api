@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170607051746) do
+ActiveRecord::Schema.define(version: 20170612002714) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,13 @@ ActiveRecord::Schema.define(version: 20170607051746) do
     t.index ["title"], name: "index_categories_on_title"
   end
 
+  create_table "landmarks", force: :cascade do |t|
+    t.bigint "location_id", null: false
+    t.bigint "category_id", null: false
+    t.index ["category_id"], name: "index_landmarks_on_category_id"
+    t.index ["location_id"], name: "index_landmarks_on_location_id"
+  end
+
   create_table "locations", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -30,4 +37,6 @@ ActiveRecord::Schema.define(version: 20170607051746) do
   end
 
   add_foreign_key "categories", "locations"
+  add_foreign_key "landmarks", "categories"
+  add_foreign_key "landmarks", "locations"
 end
