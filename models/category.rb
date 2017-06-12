@@ -1,11 +1,11 @@
 class Category < ActiveRecord::Base
 
-	belongs_to :location
+	has_many :landmaks, inverse_of: :category
+
+	has_many :locations, through: :landmaks
 
 	has_many_documents :places #, inverse_of: :category
 
-	validates_presence_of :title, :location_id, unique: true
-
-	validates_associated :location
+	validates_presence_of :title, unique: true
 
 end
