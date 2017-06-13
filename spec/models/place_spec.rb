@@ -126,6 +126,12 @@ RSpec.describe Place, :type => :model, :orm => :mongoid do
 		
 	end
 
+	describe "one Place to many category" do
+		
+		it_should_behave_like "many-to-one Association", [:place, :category]
+		
+	end
+
 
 
 end

@@ -28,6 +28,16 @@ module ModelsHelper
 		FactoryGirl.build(:place)
 	end
 
+	def check_for_foreign_key subj, fk, obj
+
+		expect(subj).to respond_to fk.to_sym
+		expect(subj).to have_attribute fk.to_sym
+
+		id = send_message(subj, fk )
+		expect(id).to_not be_nil
+		expect(id).to eq obj.id
+	end
+
 	def send_message obj, msg, param=nil
 		param ? obj.send(msg.to_sym, param) : obj.send(msg.to_sym)
 	end
@@ -67,7 +77,7 @@ module ModelsHelper
 
 	RSpec.shared_examples "Custom DB type" do |object|
 
-		describe "valid #{object.classify}" do
+		describe "valid #{object.to_s.classify}" do
 
 			it "not nil" do
 				# byebug
@@ -116,7 +126,7 @@ module ModelsHelper
 
 	RSpec.shared_examples "Valid type" do |object, methods|
 
-		describe "valid #{object.classify} instance" do
+		describe "valid #{object.to_s.classify} instance" do
 			# byebug
 
 			let(:newObject) { make_object(object).new(nil) }
@@ -249,12 +259,18 @@ module ModelsHelper
 		end
 	end
 
-	RSpec.shared_examples "Associations" do |object, association|
+	RSpec.shared_examples "Associations" do |object, association, connecting_obj=nil|
 
-		let(:obj) { FactoryGirl.create(object, create_association_param(association)) }
-		let!(:assos_obj) { send_message(obj, "#{association.pluralize}=", FactoryGirl.build_list(association.to_sym, 4)) }
+		
+		if connecting_obj
+			let(:obj) { FactoryGirl.create(object) }
+			let!(:records)  { FactoryGirl.create_list(connecting_obj, 10, object=>obj) }
+		else
+			let(:obj) { FactoryGirl.create(object) }
+			let!(:assos_obj) { send_message(obj, "#{association.pluralize}=", FactoryGirl.build_list(association.to_sym, 4)) }
+		end
+		
 		# let(:obj) { FactoryGirl.create(association.to_sym)}
-		let(:fk)  { build_foreign_key object }
 
 		subject { send_message(obj, association.pluralize) }
 		
@@ -279,9 +295,21 @@ module ModelsHelper
 
 		end
 
+	end
+
+	RSpec.shared_examples "Verify Associations" do |object, association|
+
+		let(:obj) { FactoryGirl.create(object) }
+		let!(:assos_obj) { send_message(obj, "#{association.pluralize}=", FactoryGirl.build_list(association.to_sym, 4)) }
+
+		let(:fk)  { build_foreign_key object }
+
+		subject { send_message(obj, association.pluralize) }
+		
+
 		context "can build association" do
 
-			let(:associated_obj) { FactoryGirl.attributes_for(association.to_sym) }
+			let(:associated_obj) { FactoryGirl.build(association.to_sym, object=>obj).attributes }
 			
 			it "can build new #{association}" do
 				data = subject.build(associated_obj)
@@ -307,17 +335,11 @@ module ModelsHelper
 			
 			it "can walk back association" do
 				subject.each do |subj|
-					expect(subj).to respond_to fk.to_sym
-					expect(subj).to have_attribute fk.to_sym
-					id = send_message(subj, fk )
-					# expect(id).to_not raise_error { }
-					expect(id).to_not be_nil
-					expect(id).to eq obj.id
+					check_for_foreign_key subj, fk, obj
 				end
 			end
 			
 		end
-
 	end
 
 	RSpec.shared_examples "Connect two different tables" do |object, owning_object, owned_object|
@@ -437,6 +459,62 @@ module ModelsHelper
 				expect(record.errors.messages).to include owning_object.to_sym=>["is invalid"]
 			end
 		end
+	end
+
+	RSpec.shared_examples "many-to-one Association" do |obj, owner|
+		
+		context "Belongs to" do
+
+		let(:fk) { build_foreign_key owner }
+		let!(:owning_object) { FactoryGirl.create(owner) }
+
+		let(:object) { FactoryGirl.create(obj, owner=>owning_object) }
+		let(:records) { FactoryGirl.create_list(obj, 10, owner=>owning_object) }
+		
+		it "have foreign_key of owninig object" do
+			expect(object).to be_persisted
+			expect(object).to be_valid
+
+			check_for_foreign_key object, fk, owning_object
+		end
+
+		it "can go back and forth to owning object" do
+			data = sending(object, owner)
+			expect(data).to_not be nil
+			expect(data).to be_a_kind_of make_object owner
+			data.attributes.keys do |key|
+				expect(FactoryGirl.create(owner).attributes).to have_key key
+			end 
+		end
+
+		it "many instance acn be owned by one owning object" do 
+			expect(records).to respond_to :each
+			expect(records).to respond_to :count
+			records.each do |rec|
+				expect(sending(rec, owner)).to eq owning_object
+				expect(sending(rec, fk)).to eq owning_object.id
+			end
+		end
+
+		it "owning object have array-like collection" do
+			data = sending(owning_object, obj.to_s.pluralize)
+			expect(records.to_a).to be_a_kind_of Array
+			expect(data).to_not be_falsey
+			expect(data.to_a).to_not be_empty
+			data.each do |dat|
+				expect(records).to include dat
+				object.attributes.keys.each do |k|
+					expect(sending(dat, k)).to_not be nil
+					# expect(sending(dat, k)).to_not raise_error {|e| e.inspect.backtrace }
+					expect(sending(dat, k)).to_not be_falsey
+				end
+				check_for_foreign_key dat, fk, owning_object
+			end
+
+		end
+
+	end
+
 	end
 
 end

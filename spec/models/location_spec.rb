@@ -21,7 +21,15 @@ RSpec.describe Location, type: :model, orm: :active_record do
 
 	describe "Relationship" do
 
-		it_should_behave_like "Associations", [:location, "category"]
+		it_should_behave_like "Associations", [:location, "category", :landmark]
+
+		it_should_behave_like "Verify Associations", [:location, "landmark", :category]
+
+	end
+
+	describe "Has many Category through Landmark" do
+		
+		it_should_behave_like "Ownership", [:landmark, "location", "category"]
 
 	end
 

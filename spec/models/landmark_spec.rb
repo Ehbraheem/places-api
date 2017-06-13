@@ -42,5 +42,13 @@ RSpec.describe Landmark, type: :model, orm: :active_record do
 		it_should_behave_like "Connect two different tables", [:landmark, "category", "location"]
 
 	end
+
+	describe "Relationship with parent records" do
+		
+		it_should_behave_like "many-to-one Association", [:landmark, :location]
+
+		it_should_behave_like "many-to-one Association", [:landmark, :category]
+		
+	end
 	
 end
