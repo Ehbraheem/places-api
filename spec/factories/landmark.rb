@@ -12,5 +12,13 @@ FactoryGirl.define do
 			location_id        nil
 			category_id		   nil
 		end
+
+		trait :with_location do
+			:location
+		end
+
+		trait :with_category do
+			:category
+		end
 	end
 end

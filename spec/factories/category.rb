@@ -8,7 +8,7 @@ FactoryGirl.define do
 
 		title     { Faker::Job.field }
 
-		association :location
+		# association :location
 		# association :place
 
 		trait :with_title do

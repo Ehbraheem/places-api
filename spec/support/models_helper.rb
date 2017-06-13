@@ -60,10 +60,14 @@ module ModelsHelper
 
 	end
 
+	def sending(obj, msg)
+		send_message obj, msg
+	end
+
 
 	RSpec.shared_examples "Custom DB type" do |object|
 
-		describe "valid #{object.to_s.classify}" do
+		describe "valid #{object.classify}" do
 
 			it "not nil" do
 				# byebug
@@ -112,7 +116,7 @@ module ModelsHelper
 
 	RSpec.shared_examples "Valid type" do |object, methods|
 
-		describe "valid #{object.to_s.classify} instance" do
+		describe "valid #{object.classify} instance" do
 			# byebug
 
 			let(:newObject) { make_object(object).new(nil) }
@@ -188,7 +192,7 @@ module ModelsHelper
 
 			let(:obj) { FactoryGirl.build(object) }
 			
-			it "default Location created with random name" do
+			it "default #{object.to_s.classify} created with random name" do
 				# byebug
 				expect(obj).to_not be_nil
 				expect(obj).to be_a_kind_of make_object object
@@ -256,7 +260,7 @@ module ModelsHelper
 		
 		context "can walk through association" do
 			
-			it "can access categories information" do
+			it "can access #{association} information" do
 				# byebug
 				expect(obj).to respond_to association.pluralize.to_sym
 				is_expected.to_not be_nil
@@ -314,6 +318,125 @@ module ModelsHelper
 			
 		end
 
+	end
+
+	RSpec.shared_examples "Connect two different tables" do |object, owning_object, owned_object|
+		
+		let(:owning_obj) { FactoryGirl.create(owning_object) }
+		let(:records)  { FactoryGirl.create_list(object, 10, owning_object=>owning_obj) }
+
+		let(:owned_obj) { sending(owning_obj, owned_object.pluralize) }
+		
+		context "from #{owning_object.classify} to #{owned_object.classify}" do
+			
+			it "allow access to #{owned_object.classify} from #{owning_object.classify}" do
+				# byebug
+				records
+				expect(owning_obj).to respond_to owned_object.pluralize.to_sym
+				expect(owned_obj.to_a).to be_a_kind_of Array
+				expect(owned_obj).to respond_to :length
+				expect(owned_obj).to respond_to :count
+				expect(owned_obj.count).to be > 1
+				expect(owned_obj.length).to be > 1
+			end
+
+			it "list out all #{owned_object.pluralize.classify} for this #{owning_object.classify}" do
+				owned_obj.each do |cat|
+					expect(sending(cat, object)).to be_a_kind_of make_object object
+					expect(sending(cat, owning_object)).to eq owning_obj
+					expect(make_object(object).all).to include sending(cat, object)
+				end
+			end
+
+			it "provides details of each #{owned_object.classify} for this #{owning_object.classify}" do
+				owned_obj.each do |cat|
+					expect(cat).to respond_to :attributes
+					make_object(owned_object).attributes.each do |attr|
+						expect(cat).to respond_to attr.to_sym
+						expect(cat).to have_attribute attr.to_sym
+						expect(cat).to respond_to "#{attr}=".to_sym
+					end
+				end
+			end
+
+			it "verify same the same #{owning_object.classify} for each #{owned_object.classify}" do
+				owned_obj.each do |cat|
+					make_object(owning_object).attributes.each do |attr|
+						expect(sending(cat, owning_object)).to respond_to attr.to_sym
+						expect(sending(cat, owning_object)).to respond_to "#{attr}=".to_sym
+						expect(sending(owning_obj, attr)).to eq sending(sending(cat,owning_object), attr) 
+
+					end
+				end
+			end
+
+		end
+	end
+
+
+	RSpec.shared_examples "Ownership" do |object, owning_object, owned_object|
+
+		context "belongs to  #{owning_object.classify}" do
+
+			let(:fail_record) { FactoryGirl.build(object, owning_object.to_sym => nil) }
+			let(:record) { FactoryGirl.build(object)}
+			
+			it "save fails when #{owning_object.classify} is nil" do
+
+				expect(fail_record.save).to be false
+				expect(fail_record).to respond_to :errors
+				expect(fail_record.errors).to respond_to :messages
+				expect(fail_record.errors).to respond_to :full_messages
+				expect(fail_record.errors.messages).to include "#{owning_object}_id".to_sym => ["can't be blank"]
+			end
+
+			it "it allow multiple document to have same #{owning_object.classify}" do
+				record.save
+				another_record = FactoryGirl.create_list(object, 10, owning_object=>sending(record, owning_object))
+				another_record.each do |land|
+					expect(sending(land, owning_object)).to eq sending(record, owning_object)
+					expect(sending(land, "#{owning_object}_id")).to eq sending(record, "#{owning_object}_id")
+					expect(sending(land, owned_object)).to_not eq sending(record, owning_object)
+					expect(sending(land, "#{owned_object}_id")).to_not eq sending(record, "#{owned_object}_id")
+				end
+			end
+
+			# it "index #{owning_object}, #{owned_object}" do
+			# 	byebug
+			# 	expect(make_object(object)).should have_db_index "#{owning_object}_id"
+			# 	expect(make_object(object)).to have_db_index "#{owned_object}_id"
+			# end
+
+		end
+	end
+
+	RSpec.shared_examples "Associations validations" do |object, owning_object, owned_object, owning_object_attr|
+
+		let(:record) { FactoryGirl.build(object, owning_object=>FactoryGirl.build(owning_object.to_sym, owning_object_attr=> nil)) }
+
+		context "save fails for invalid #{owning_object.classify}" do
+			
+			it "rollback save for invalid #{owning_object.classify}" do
+				expect(record.save).to be false
+				expect(sending(record,owning_object)).to be_invalid
+				expect(sending(record, owned_object)).to_not be nil
+				expect(record).to_not be nil
+			end
+
+			it "provide descriptive error messages" do
+				expect(record.save).to be false
+				expect(record).to respond_to :errors
+				expect(record.errors).to_not be nil
+				expect(record.errors.messages).to_not be nil
+				expect(record.errors).to respond_to :full_messages
+				expect(record.errors.messages).to include "#{owning_object}_id".to_sym =>["can't be blank"]
+			end
+
+			it "failed to save record with invalid #{owning_object.classify}" do
+				expect(record.save).to be false
+				expect(record.errors.messages).to include owning_object.to_sym=>["is invalid"]
+			end
+		end
 	end
 
 end
