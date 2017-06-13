@@ -26,7 +26,7 @@ class ActiveRecord::Base
 		# end
 
 		define_method :method_missing do |method_name, *args, &blk|
-			byebug
+			# byebug
 			match = method_name.to_s.match /(.*?)([?=!]*?)$/
 			super(method_name, *args, &blk) if !(self.respond_to? match[1].pluralize)
 			case match[2]
