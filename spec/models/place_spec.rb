@@ -1,4 +1,6 @@
-require "spec_helper"
+require File.expand_path "../../spec_helper.rb", __FILE__
+
+
 # require_relative File.absolute_path "./models/place.rb"
 require_relative File.absolute_path "./models/point.rb"
 
@@ -129,7 +131,7 @@ RSpec.describe Place, :type => :model, :orm => :mongoid do
 	describe "one Place to many category" do
 		
 		it_should_behave_like "many-to-one Association", [:place, :category]
-		
+
 	end
 
 

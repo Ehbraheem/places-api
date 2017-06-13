@@ -1,4 +1,5 @@
-require "spec_helper"
+require File.expand_path "../../spec_helper.rb", __FILE__
+
 
 RSpec.describe Landmark, type: :model, orm: :active_record do 
 

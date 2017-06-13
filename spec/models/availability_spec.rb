@@ -1,4 +1,4 @@
-require "spec_helper"
+require File.expand_path "../../spec_helper.rb", __FILE__
 # require_relative File.absolute_path "./models/availability.rb"
 
 RSpec.describe "Availability", :type => :model do

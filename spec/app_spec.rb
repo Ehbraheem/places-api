@@ -1,6 +1,4 @@
-require "spec_helper"
-require "rack/test"
-require_relative "../app"
+require File.expand_path "../spec_helper.rb", __FILE__
 
 RSpec.describe 'Places API' do
 

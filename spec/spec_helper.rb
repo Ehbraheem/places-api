@@ -19,6 +19,7 @@
 ENV["RACK_ENV"] = 'test'
 
 
+require "rack/test"
 require "byebug"
 require 'mongoid-rspec'
 require 'factory_girl'
@@ -27,11 +28,24 @@ require_relative File.expand_path "../../app", __FILE__
 require_relative File.expand_path "../support/models_helper", __FILE__
 require_relative File.expand_path "../support/database_cleaner", __FILE__
 
+
+module RSpecMIxin
+
+  include Rack::Test::Methods
+
+  def app
+    PlacesApi
+  end
+  
+end
+
 #Eager Load all factories
 Dir[File.dirname(__FILE__) + "/factories/*.rb"].each { |file| require_relative file }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+
+  config.include RSpecMIxin
 
   # bootstrap mongoid matchers for model specs
   # :orm => :mongoid | load mongoid matcher with spec that have metadata orm set to mongoid
