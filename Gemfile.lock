@@ -24,6 +24,9 @@ GEM
     faker (1.7.3)
       i18n (~> 0.5)
     i18n (0.8.4)
+    jbuilder (2.7.0)
+      activesupport (>= 4.2.0)
+      multi_json (>= 1.2)
     minitest (5.10.2)
     mongo (2.4.2)
       bson (>= 4.2.1, < 5.0.0)
@@ -36,6 +39,7 @@ GEM
       mongoid (~> 5.0)
       rake
       rspec (~> 3.3)
+    multi_json (1.12.1)
     mustermann (1.0.0)
     origin (2.3.1)
     pg (0.20.0-x64-mingw32)
@@ -68,6 +72,9 @@ GEM
       sinatra (>= 1.0)
     thread_safe (0.3.6)
     tilt (2.0.7)
+    tilt-jbuilder (0.7.1)
+      jbuilder
+      tilt (>= 1.3.0, < 3)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
 
@@ -87,6 +94,7 @@ DEPENDENCIES
   rspec (~> 3.5, >= 3.5.0)
   sinatra (~> 2.0, >= 2.0.0)
   sinatra-activerecord (~> 2.0, >= 2.0.13)
+  tilt-jbuilder
 
 RUBY VERSION
    ruby 2.2.6p396

@@ -6,6 +6,7 @@ gem 'activerecord', '~>4.2', '>=4.2.8'
 gem 'sinatra-activerecord', '~>2.0', '>=2.0.13'
 gem 'pg', '~>0.19', '>=0.19.0'
 gem 'mongoid', '~>5.2', '>=5.2.1'
+gem 'tilt-jbuilder'
 
 group :test, :development do
 	gem 'rspec', '~>3.5', '>=3.5.0'
