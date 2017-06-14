@@ -94,7 +94,7 @@ DEPENDENCIES
   rspec (~> 3.5, >= 3.5.0)
   sinatra (~> 2.0, >= 2.0.0)
   sinatra-activerecord (~> 2.0, >= 2.0.13)
-  tilt-jbuilder
+  tilt-jbuilder (~> 0.7, >= 0.7.1)
 
 RUBY VERSION
    ruby 2.2.6p396
