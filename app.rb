@@ -33,6 +33,9 @@ class PlacesApi < Sinatra::Base
 
 	 	get '/' do
 	 		@location = Location.all
+
+	 		jbuilder :index
+	 		
 	 	end
 	 end
 
