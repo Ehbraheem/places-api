@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require "sinatra/activerecord"
+require "sinatra/namespace"
 require "mongoid"
 # require "byebug"
 
@@ -23,5 +24,17 @@ class PlacesApi < Sinatra::Base
 	 get '/' do
 	 	{:welcome => "This is a test JSON response"}.to_json
 	 end
+
+	 namespace '/api/v1' do
+	 	
+	 	before do
+	 		content_type 'application/json'
+	 	end
+
+	 	get '/' do
+	 		@location = Location.all
+	 	end
+	 end
+
 
 end
