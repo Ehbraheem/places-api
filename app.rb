@@ -25,7 +25,7 @@ class PlacesApi < Sinatra::Base
 	 	{:welcome => "This is a test JSON response"}.to_json
 	 end
 
-	 namespace '/api/v1' do
+	 namespace '/api/v1/places' do
 	 	
 	 	before do
 	 		content_type 'application/json'
