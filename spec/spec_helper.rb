@@ -26,7 +26,10 @@ require 'factory_girl'
 
 require_relative File.expand_path "../../app", __FILE__
 require_relative File.expand_path "../support/models_helper", __FILE__
+require_relative File.expand_path "../support/api_helper", __FILE__
 require_relative File.expand_path "../support/database_cleaner", __FILE__
+
+# Dir[File.dirname(__FILE__) +  "/support/*.rb"].each { |file| byebug; require_relative file }
 
 
 module RSpecMIxin
@@ -55,6 +58,12 @@ RSpec.configure do |config|
 
   # bootstrap models helper module for model type
   config.include ModelsHelper, type: :models
+
+  # bootstrap Api helper module for request type
+  config.include RouteHelpers, :type => :request
+
+  # bootstrap Api helper module for request type
+  config.include ApiHelper, :type => :request
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

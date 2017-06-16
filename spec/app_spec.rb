@@ -10,9 +10,7 @@ RSpec.describe 'Places API' do
 
 	before(:each) { get '/'}
 
-	def parsed_body
-		JSON.parse last_response.body
-	end
+	
 
 	it "has http status OK" do
 		expect(last_response).to be_ok
