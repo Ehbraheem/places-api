@@ -1,0 +1,1 @@
+json.array! @location, partial: "location", as: :data
