@@ -26,6 +26,8 @@ class Place
 
 	validates_presence_of :location, :icon, :opening_hours, :reference, :formatted_address, :name, :place_id, :geometry
 	validates_uniqueness_of :name, :place_id, :geometry
+
+	scope :for_category, ->(category_id, location_id) { where(:category_id => category_id, :location=> location_id)}
 	
 
 end
