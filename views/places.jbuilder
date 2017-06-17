@@ -1,0 +1,1 @@
+json.array! @places, patial: "place", as: :place
