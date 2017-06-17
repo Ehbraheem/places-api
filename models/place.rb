@@ -23,6 +23,8 @@ class Place
 	field :rating, type: Float, default: 0.0
 	field :location, type: Array, default: []
 
+	index( { location: 1}, { background: true})
+
 
 	validates_presence_of :location, :icon, :opening_hours, :reference, :formatted_address, :name, :place_id, :geometry
 	validates_uniqueness_of :name, :place_id, :geometry
