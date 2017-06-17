@@ -49,49 +49,6 @@ class PlacesApi < Sinatra::Base
 	 		jbuilder :index
 
 	 	end
-
-	 	get "/locations/:name" do |name|
-	 		@location = Location.with_name name
-
-	 		jbuilder :location
-
-	 	end
-
-	 	get "/locations/:location/categories" do |name|
-	 		@categories = Location.with_name(name).categories
-
-	 		jbuilder :categories
-	 	end
-
-	 	get "/locations/:location/categories/:title" do |name, title|
-	 		@category = Location.with_name(name).categories.with_title(title)
-
-	 		jbuilder :category
-	 	end
-
-	 	get "/locations/:location/categories/:title/places" do |name, title|
-	 		@category ||= Category.with_title(title)
-	 		@location ||= Location.with_name(name)
-	 		@places = Place.for_category(@category.id, @location.id)
-
-	 		jbuilder :places
-	 	end
-
-	 	get "/search" do 
-	 		
-	 		query = params.try(:[], "query") || params.try(:[], "q")
-	 		match_data = query.match /\A(.+?)\sin\s(.+?)\z/i
-	 		redirect "/search" if match_data[0].empty?
-	 		location = match_data[2]
-	 		category = match_data[1]
-	 		@location = Location.with_name(location)
-	 		@category = Category.with_title(category)
-	 		@places = Place.for_category(@category.id, @location.id)
-
-	 		jbuilder :places
-	 	end
-
-
 	 end
 
 	 # Start the server if this file is executed directly
