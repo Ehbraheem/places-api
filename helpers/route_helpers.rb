@@ -7,24 +7,38 @@ module RouteHelpers
 	end
 
 	def self.add_path base, path
-		base = base.gsub /\/\z/, ""
+		absolute_path = ""
 		if path.respond_to? :each
-			path.each {|p| base + "/" +  p }
+			base = base.gsub /\/\z/, ""
+			path.each do |p|
+				p = p.gsub(/\s/, "+").downcase
+				absolute_path += base + "/" +  p
+			end
 		else
-		 	base + "/" + path
+			base = base.gsub /\/\z/, ""
+		 	absolute_path += base + "/" + path
 		 end
+		 absolute_path
 	end
 
 	def self.make_path path, root_path
-		self.class.send(:define_method, "#{path.to_s.pluralize}_path".to_sym) do
-			add_path(root_path, path.to_s.pluralize)
+		self.class.send(:define_method, "#{path.to_s.pluralize}_path".to_sym) do |param=nil|
+			# byebug
+			if param.nil?
+				# byebug
+				add_path(root_path, path.to_s.pluralize)
+			else
+				add_path(add_path(root_path, param), path.to_s.pluralize)
+			end
+			# param.nil? ? add_path(root_path, path.to_s.pluralize) : add_path(add_path(root_path, param), path.to_s.pluralize)
 		end
-		self.class.send(:define_method, "#{path}_path".to_sym) do |param=name|
-			add_path(send("#{path.to_s.pluralize}_path"), param[0])
+		self.class.send(:define_method, "#{path}_path".to_sym) do |param=nil|
+			# byebug
+			add_path(send("#{path.to_s.pluralize}_path"), param)
 		end
 	end
 
-	paths_hash = {  :location => "base",  :category => "location", :place => "category" }
+	paths_hash = {  :location => "base",  :category => "locations", :place => "categories" }
 
 
 	paths_hash.each_pair do |path, root|
