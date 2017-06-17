@@ -148,10 +148,22 @@ module ApiHelper
 
 	end
 
-	RSpec.shared_examples "verify JSON docuemnt returned" do |object, attribute|
+	RSpec.shared_examples "verify JSON docuemnt returned" do |object, attribute, relation=nil, assos=nil, param=nil|
 
-		let(:datas) { FactoryGirl.create_list(object, 67) }
-		let(:record) { FactoryGirl.create(object) }
+
+		if relation
+			let(:connector) { FactoryGirl.create(assos) }
+
+			let(:records) { FactoryGirl.create_list(relation, 67, assos=>connector) }
+			let(:data) { FactoryGirl.create(relation, assos=>connector); connector.send(object.to_s.pluralize)}
+			let(:datas) { connector.send(object.to_s.pluralize) }
+			let(:record) { FactoryGirl.create(object) }
+		else
+			let(:datas) { FactoryGirl.create_list(object, 67) }
+			let(:record) { FactoryGirl.create(object) }
+		end
+
+		
 		
 		context "verify document returned" do
 
@@ -162,15 +174,20 @@ module ApiHelper
 				record
 				attributes = record.attributes
 				# byebug
-				url = send(make_path(object, false), record.send(attribute)) # location_path(record.name) 
+				# url = send(make_path(object, false), record.send(attribute)) # location_path(record.name) 
 
-				jget send(make_path(object)) # locations_path
+				if !!(param && relation)
+					records
+					jget send(make_path(object), connector.send(param))
+				else
+					jget send(make_path(object))
+				end # locations_path
 
 				payload = result_stripper
 				payload.each do |doc|
 					expect(doc).to_not be_nil
 					expect(doc).to_not be_empty
-					expect(doc["url"].gsub(/.+\/\/example.org/, "")).to eq url
+					# expect(doc["url"].gsub(/.+\/\/example.org/, "")).to eq url
 
 					attributes.keys.each do |key|
 						payload.each do |doc|
@@ -183,15 +200,22 @@ module ApiHelper
 				
 			end
 
+			it_should_behave_like "Check response"
+
 			it "validate against DB records" do
 				datas
-				records = make_object(object).all
+				recordss = make_object(object).all
 
-				jget send(make_path(object))
+				if !!(param && relation)
+					records
+					jget send(make_path(object), connector.send(param))
+				else
+					jget send(make_path(object))
+				end
 
 				payload = result_stripper
 
-				records.each do |rec|
+				recordss.each do |rec|
 					payload.each do |doc|
 						doc.delete(:url)
 						doc.keys do |key|
@@ -207,28 +231,56 @@ module ApiHelper
 		end
 	end
 
-	RSpec.shared_examples "return accurate number of records" do |object|
+	RSpec.shared_examples "relationship verify JSON document returned" do |object, attribute, relation, assos, param|
+		it_should_behave_like "Check response"
+		it_should_behave_like "verify JSON docuemnt returned", [object, attribute, relation, assos, param]
+		it_should_behave_like "Check response"
+	end
 
-		let(:datas) { FactoryGirl.create_list(object, 67) }
+	RSpec.shared_examples "return accurate number of records" do |object, relation=nil, assos=nil, param=nil|
+
+		it_should_behave_like "Check response"
+
+		if relation
+			let(:connector) { FactoryGirl.create(assos) }
+
+			let(:records) { FactoryGirl.create_list(relation, 67, assos=>connector) }
+			let(:data) { FactoryGirl.create(relation, assos=>connector); connector.send(object.to_s.pluralize)}
+			let(:datas) { connector.send(object.to_s.pluralize) }
+			let(:record) { FactoryGirl.create(object) }
+		else
+			let(:datas) { FactoryGirl.create_list(object, 67) }
+		end
 
 		it_should_behave_like "Check response"
 		
 		it "returns correct number of records" do
-				datas
+			datas
 
+			if !!(param && relation)
+				records
+				jget send(make_path(object), connector.send(param))
+			else
 				jget send(make_path(object))
-
-				payload = result_stripper
-				expect(payload).to_not be_empty
-				expect(payload).to respond_to :length
-				expect(payload.length).to be > 10
-				expect(payload.length).to eq datas.count
 			end
+
+			payload = result_stripper
+			expect(payload).to_not be_empty
+			expect(payload).to respond_to :length
+			expect(payload.length).to be > 10
+			expect(payload.length).to eq datas.count
+		end
 
 		it "returns exact document inserted into DB" do
 			datas
 
-			jget send(make_path(object))
+			if !!(param && relation)
+				records
+				jget send(make_path(object), connector.send(param))
+			else
+				jget send(make_path(object))
+			end
+
 			payload = result_stripper
 			expect(payload).to respond_to :each
 			expect(payload.length).to be > 1
@@ -256,7 +308,7 @@ module ApiHelper
 				expect(payload).to be_empty
 				expect(payload).to_not be_nil
 				expect(payload).to respond_to :each
-			end
+		end
 
 		it "is not empty when data is persisted" do
 			datas
@@ -276,6 +328,88 @@ module ApiHelper
 				end
 			end
 				
+		end
+	end
+
+	shared_context "no data" do
+		it "is empty when data is not persisted" do
+			payload = result_stripper
+			expect(payload).to eq []
+			expect(payload).to be_empty
+			expect(payload).to_not be_nil
+			expect(payload).to respond_to :each
+		end
+	end
+
+	RSpec.shared_examples "relationship returns accurate number of records" do |object, relation, assos, param|
+
+		it_should_behave_like "Check response"
+
+		it_should_behave_like "return accurate number of records", [object, relation, assos, param]
+
+	end
+
+	RSpec.shared_examples "relationship returns all data currently available" do |object, relation, assos, param|
+
+		let(:connector) { FactoryGirl.create(assos) }
+
+		let(:records) { FactoryGirl.create_list(relation, 67, assos=>connector) }
+		let(:data) { FactoryGirl.create(relation, assos=>connector); connector.send(object.to_s.pluralize)}
+		let(:datas) { connector.send(object.to_s.pluralize) }
+		let(:record) { FactoryGirl.create(object) }
+
+		context "all datas" do
+			it_should_behave_like "Check response"
+			include_context "no data"
+		end
+		
+		context "Single data available" do
+			it_should_behave_like "Check response"
+
+			include_context "no data"
+
+			it "is not empty when data is persisted" do
+				data
+				jget send(make_path(object), connector.send(param))
+
+				payload = result_stripper
+				expect(payload).to_not be_empty
+				expect(payload).to_not be_nil
+				payload.each do |json|
+					expect(json).to be_a_kind_of Hash
+					expect(json).to respond_to :keys
+					expect(json).to respond_to :values
+					# expect(json).to have_key "url"
+					record.attributes.keys.each do |key|
+						expect(json).to have_key key
+					end
+				end	
+			end
+		end
+
+		context "Multiple data available" do
+			include_context "no data"
+
+			
+
+			it "is not empty when data is persisted" do
+				records
+				datas
+				jget send(make_path(object), connector.send(param))
+
+				payload = result_stripper
+				expect(payload).to_not be_empty
+				expect(payload).to_not be_nil
+				payload.each do |json|
+					expect(json).to be_a_kind_of Hash
+					expect(json).to respond_to :keys
+					expect(json).to respond_to :values
+					# expect(json).to have_key "url"
+					record.attributes.keys.each do |key|
+						expect(json).to have_key key
+					end
+				end	
+			end
 		end
 	end
 
