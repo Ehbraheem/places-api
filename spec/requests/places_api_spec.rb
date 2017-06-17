@@ -58,7 +58,7 @@ RSpec.describe "Places API", type: :request do
 
 			it_should_behave_like "Valid response"
 
-			it_should_behave_like "Return all data currently availabe", :location 
+			it_should_behave_like "Return all data currently availabe", :location
 
 			it_should_behave_like "return accurate number of records", :location
 
@@ -73,8 +73,9 @@ RSpec.describe "Places API", type: :request do
 	describe "Category page" do
 
 		before(:each) do
-			jget categories_path
-		end 
+				location =  FactoryGirl.create(:location) 
+				jget categories_path(location.name)
+			end 
 		
 		describe "Empty database" do
 
@@ -90,13 +91,13 @@ RSpec.describe "Places API", type: :request do
 
 			it_should_behave_like "Valid response"
 
-			it_should_behave_like "Return all data currently availabe", :category 
+			it_should_behave_like "relationship returns all data currently available", [:category, :landmark, :location, :name]
 
-			it_should_behave_like "return accurate number of records", :category
+			it_should_behave_like "relationship returns accurate number of records", [:category, :landmark, :location, :name]
 
-			it_should_behave_like "verify JSON docuemnt returned", [:category, :title]
+			it_should_behave_like "relationship verify JSON document returned", [:category, :title, :landmark, :location, :name]
 
-			it_should_behave_like "verify data", :category
+			# it_should_behave_like "verify data", :category
 
 		end
 
