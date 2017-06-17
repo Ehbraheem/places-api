@@ -8,4 +8,6 @@ class Category < ActiveRecord::Base
 
 	validates_presence_of :title, unique: true
 
+	scope :with_title, ->(title) { where(:title=>title).first }
+
 end
