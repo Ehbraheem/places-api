@@ -1,5 +1,5 @@
 require "mongoid"
-# require_relative File.absolute_path "./models/availability.rb"
+require_relative File.absolute_path "./models/availability.rb"
 require_relative File.absolute_path "./models/point.rb"
 
 class Place
