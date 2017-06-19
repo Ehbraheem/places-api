@@ -14,6 +14,7 @@ class Location < ActiveRecord::Base
 	before_save :downcase_name
 
 	def self.with_name name
+		name = name.gsub(/\s/, "+").downcase
 		find_by(:name => name)
 	end
 

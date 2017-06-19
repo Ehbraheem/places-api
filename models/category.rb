@@ -12,6 +12,7 @@ class Category < ActiveRecord::Base
 	scope :with_title, -> (title) { find_by(:title => title) }
 
 	def self.with_title title
+		title = title.gsub(/\s/, "+").downcase
 		find_by(:title => title)
 	end
 
