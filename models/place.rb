@@ -7,6 +7,7 @@ class Place
 	include Mongoid::Document
 	include Mongoid::Attributes::Dynamic
 	include Mongoid::ActiveRecordBridge
+	Mongoid::QueryCache.enabled = true
 
 	belongs_to_record :category
 
