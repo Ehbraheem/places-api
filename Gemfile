@@ -9,6 +9,7 @@ gem 'mongoid', '~>6.2', '>=6.2.0'
 gem 'sinatra-contrib', '~> 2.0', '>= 2.0.0'
 gem 'tilt-jbuilder', '~> 0.7', '>= 0.7.1'
 gem 'httparty', '~> 0.14', '>= 0.14.0'
+gem 'heroku'
 
 group :test, :development do
 	gem 'rspec', '~>3.5', '>=3.5.0'
