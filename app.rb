@@ -3,7 +3,6 @@ require "sinatra/activerecord"
 require "sinatra/namespace"
 require "mongoid"
 require "sinatra/jbuilder"
-require 'HTTParty'
 
 # require "byebug"
 
