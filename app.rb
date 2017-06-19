@@ -3,11 +3,12 @@ require "sinatra/activerecord"
 require "sinatra/namespace"
 require "mongoid"
 require "sinatra/jbuilder"
+require 'HTTParty'
 
-require "byebug"
+# require "byebug"
 
-ENV['RACK_ENV'] = 'development'
-
+# ENV['RACK_ENV'] = 'development'
+# 
 # Eager Load all models files
 current_dir = Dir.pwd
 # ./lib/
@@ -81,12 +82,13 @@ class PlacesApi < Sinatra::Base
 	 		
 	 		query = params.try(:[], "query") || params.try(:[], "q")
 	 		match_data = query.match /\A(.+?)\sin\s(.+?)\z/i
-	 		redirect "/search" if match_data[0].empty?
+	 		redirect "/api/v1/" if match_data[0].empty?
 	 		location = match_data[2]
-	 		category = match_data[1]
-	 		@location = Location.with_name(location)
-	 		@category = Category.with_title(category)
-	 		@places = Place.for_category(@category.id, @location.id)
+	 		category = match_data[1] 
+	 		ApiDelegator::Delegate.save_data(match_data.to_a)
+			 @location = Location.with_name(location)
+			 @category = Category.with_title(category)
+			 @places = Place.for_category(@category.id, @location.id)
 
 	 		jbuilder :places
 	 	end
