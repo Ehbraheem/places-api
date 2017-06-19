@@ -6,7 +6,7 @@ require "sinatra/jbuilder"
 
 # require "byebug"
 
-# ENV['RACK_ENV'] = 'development'
+ENV['RACK_ENV'] = 'development'
 # 
 # Eager Load all models files
 current_dir = Dir.pwd
@@ -85,9 +85,9 @@ class PlacesApi < Sinatra::Base
 	 		location = match_data[2]
 	 		category = match_data[1] 
 	 		ApiDelegator::Delegate.save_data(match_data.to_a)
-			 @location = Location.with_name(location)
-			 @category = Category.with_title(category)
-			 @places = Place.for_category(@category.id, @location.id)
+			@location = Location.with_name(location)
+			@category = Category.with_title(category)
+			@places = Place.for_category(@category.id, @location.id)
 
 	 		jbuilder :places
 	 	end
