@@ -5,6 +5,7 @@ require_relative File.absolute_path "./models/point.rb"
 class Place
 
 	include Mongoid::Document
+	include Mongoid::Attributes::Dynamic
 	include Mongoid::ActiveRecordBridge
 
 	belongs_to_record :category
@@ -26,10 +27,27 @@ class Place
 	index( { location: 1}, { background: true})
 
 
-	validates_presence_of :location, :icon, :opening_hours, :reference, :formatted_address, :name, :place_id, :geometry
+	validates_presence_of :location, :icon, :reference, :formatted_address, :name, :place_id, :geometry #:opening_hours, 
 	validates_uniqueness_of :name, :place_id, :geometry
 
 	scope :for_category, ->(category_id, location_id) { where(:category_id => category_id, :location=> location_id)}
+
+	before_save :set_geometry
+	before_upsert :set_geometry
+
+	def set_geometry 
+		self.geometry = self.geometry.keys.inject({}) do |hash, key|
+			if 'location' != key
+				hash[key] = self.geometry[key].keys.inject({}) do |emp, e|
+								emp[e] = Point.new self.geometry[key][e].values
+								emp
+							end
+			else
+				hash[key] = Point.new self.geometry[key].values
+			end
+			hash
+		end
+	end
 	
 
 end
