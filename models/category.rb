@@ -19,7 +19,7 @@ class Category < ActiveRecord::Base
 	end
 
 	def singular_title
-		self.title = name.singularize.downcase
+		self.title = title.singularize.downcase
 	end
 
 end
