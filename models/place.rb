@@ -34,7 +34,7 @@ class Place
 	# scope :for_category, ->(category_id, location_id) { where(:category_id => category_id, :location=> location_id)}
 
 	def self.for_category category, location
-		return [] if !!(category && location)
+		return [] unless !!(category && location)
 		where(:category_id => category.try(:id), :location=> location.try(:id))
 	end
 
