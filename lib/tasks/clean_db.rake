@@ -9,8 +9,9 @@ namespace :clean_db do
 	desc "Clean DB"
 	task :cleaner do
 		{:active_record=> [:landmarks, :locations, :categories], :mongoid => [:place]}.each_pair do |name, val| 
-			val.each do 
-				|e| Rake::Task['clean_db:start_cleaning'].invoke(name,"truncation",e)
+			val.each do |e| 
+				Rake::Task['clean_db:start_cleaning'].reenable
+				Rake::Task['clean_db:start_cleaning'].invoke(name,"truncation",e)
 			end
 		end
 	end
