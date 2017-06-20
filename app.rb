@@ -97,6 +97,6 @@ class PlacesApi < Sinatra::Base
 
 	 # Start the server if this file is executed directly
 	 # in development
-	 # run! if app_file == $0
+	 run! if app_file == $0
 
 end
