@@ -49,12 +49,16 @@ class PlacesApi < Sinatra::Base
 	 	get '/locations' do
 	 		@location = Location.all
 
+	 		@page_title = "Locations"
+
 	 		jbuilder :index
 
 	 	end
 
 	 	get "/locations/:name" do |name|
 	 		@location = Location.with_name name
+
+	 		@page_title = name.gsub(/\+/, ' ').titleize
 
 	 		jbuilder :location
 
@@ -63,11 +67,15 @@ class PlacesApi < Sinatra::Base
 	 	get "/locations/:location/categories" do |name|
 	 		@categories = Location.with_name(name).categories
 
+	 		@page_title = "Categories"
+
 	 		jbuilder :categories
 	 	end
 
 	 	get "/locations/:location/categories/:title" do |name, title|
 	 		@category = Location.with_name(name).categories.with_title(title)
+
+	 		@page_title = title.gsub(/\+/, ' ').titleize
 
 	 		jbuilder :category
 	 	end
@@ -76,6 +84,8 @@ class PlacesApi < Sinatra::Base
 	 		@category ||= Category.with_title(title)
 	 		@location ||= Location.with_name(name)
 	 		@places = Place.for_category(@category.id, @location.id)
+
+	 		@page_title = "Places"
 
 	 		jbuilder :places
 	 	end
@@ -90,7 +100,9 @@ class PlacesApi < Sinatra::Base
 	 		ApiDelegator::Delegate.save_data(match_data.to_a)
 			@location = Location.with_name(location)
 			@category = Category.with_title(category)
-			@places = Place.for_category(@category.id, @location.id)
+			@places = Place.for_category(@category, @location)
+
+			@page_title = query.gsub(/\+/, ' ').titleize
 
 	 		jbuilder :places
 	 	end
