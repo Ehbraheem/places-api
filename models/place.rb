@@ -31,7 +31,12 @@ class Place
 	validates_presence_of :location, :icon, :reference, :formatted_address, :name, :place_id, :geometry #:opening_hours, 
 	validates_uniqueness_of :name, :place_id, :geometry
 
-	scope :for_category, ->(category_id, location_id) { where(:category_id => category_id, :location=> location_id)}
+	# scope :for_category, ->(category_id, location_id) { where(:category_id => category_id, :location=> location_id)}
+
+	def self.for_category category, location
+		return [] if !!(category && location)
+		where(:category_id => category.try(:id), :location=> location.try(:id))
+	end
 
 	before_save :set_geometry
 	before_upsert :set_geometry
