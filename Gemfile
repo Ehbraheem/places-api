@@ -10,6 +10,7 @@ gem 'sinatra-contrib', '~> 2.0', '>= 2.0.0'
 gem 'tilt-jbuilder', '~> 0.7', '>= 0.7.1'
 gem 'httparty', '~> 0.14', '>= 0.14.0'
 gem 'heroku'
+gem 'puma', '~>3.7', '>=3.7.0'
 
 group :test, :development do
 	gem 'rspec', '~>3.5', '>=3.5.0'
