@@ -1,9 +1,6 @@
 
 Sinatra::Base.configure :production, :development, :test do 
 
-	set :server, :puma 
-	set :threaded, true
-
 	# Bootstrap MongoDB connection
 	Mongoid.load! "./config/mongoid.yml"  # we are running this method from top-level
 

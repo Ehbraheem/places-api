@@ -25,6 +25,9 @@ class PlacesApi < Sinatra::Base
 
 	include RouteHelpers
 
+	set :server, :puma 
+	set :threaded, true
+
 
 	register Sinatra::Namespace
 	# byebug
