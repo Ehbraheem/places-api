@@ -6,7 +6,7 @@ require "sinatra/jbuilder"
 
 # require "byebug"
 
-ENV['RACK_ENV'] = 'development'
+# ENV['RACK_ENV'] = 'development'
 # 
 # Eager Load all models files
 current_dir = Dir.pwd
