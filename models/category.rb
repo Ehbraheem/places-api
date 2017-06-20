@@ -9,11 +9,17 @@ class Category < ActiveRecord::Base
 	validates_presence_of :title, unique: true
 	validates_uniqueness_of :title
 
-	scope :with_title, -> (title) { find_by(:title => title) }
+	# scope :with_title, -> (title) { find_by(:title => title) }
+
+	before_save :singular_title
 
 	def self.with_title title
-		title = title.gsub(/\s/, "+").downcase
+		title = title.gsub(/\s/, "+").downcase.singularize
 		find_by(:title => title)
+	end
+
+	def singular_title
+		self.title = name.singularize.downcase
 	end
 
 end
