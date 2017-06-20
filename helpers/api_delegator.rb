@@ -5,11 +5,7 @@ module ApiDelegator
 	class Delegate
 
 		GOOGLE_API = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
-
-		# def initialize(query)
-			
-		# end
-
+		
 		def self.api_url query
 			query.gsub!(/\s/, "+")
 			GOOGLE_API + query + "&key=#{ENV['GOOGLE_KEY']}"
