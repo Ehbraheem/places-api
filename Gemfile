@@ -11,13 +11,13 @@ gem 'tilt-jbuilder', '~> 0.7', '>= 0.7.1'
 gem 'httparty', '~> 0.14', '>= 0.14.0'
 gem 'heroku'
 gem 'puma', '~>3.7', '>=3.7.0'
+gem 'database_cleaner', '~>1.6', '>=1.6.1'
 
 group :test, :development do
 	gem 'rspec', '~>3.5', '>=3.5.0'
 	gem 'rack-test', '~>0.6', '>=0.6.3'
 	gem 'mongoid-rspec', '~> 1.10', '>= 1.10.0'
 	gem 'byebug'
-	gem 'database_cleaner', '~>1.6', '>=1.6.1'
 	gem 'factory_girl', '~>4.8', '>=4.8.0'
 	gem 'faker', '~>1.7', '>=1.7.3'
 end
